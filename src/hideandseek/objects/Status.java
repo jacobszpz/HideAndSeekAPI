@@ -1,7 +1,7 @@
 package hideandseek.objects;
 
 public enum Status {
-	OKAY, MISSING_PARAM, INVALID_PARAM, CANNOT_JOIN, NAME_EXISTS, INVALID_SESSION, ERROR, CSV_ERROR, IO_ERROR, NOT_POSSIBLE;
+	OKAY, FINISHED, MISSING_PARAM, INVALID_PARAM, CANNOT_JOIN, NAME_EXISTS, INVALID_SESSION, ERROR, CSV_ERROR, IO_ERROR, NOT_POSSIBLE;
 
 	private String msg;
 	
@@ -17,6 +17,8 @@ public enum Status {
 		switch (status.toLowerCase()) {
 		case "ok":
 			return OKAY;
+		case "finished":
+			return FINISHED;
 		case "missing required parameter":
 			return MISSING_PARAM;
 		case "invalid parameter":
@@ -38,6 +40,8 @@ public enum Status {
 		switch (status) {
 		case OKAY:
 			return "OKAY";
+		case FINISHED:
+			return "FINISHED";
 		case MISSING_PARAM:
 			return "MISSING_PARAM";
 		case INVALID_PARAM:

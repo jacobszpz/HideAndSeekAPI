@@ -1,4 +1,4 @@
-package hideandseek;
+package hideandseek.util;
 
 import java.io.IOException;
 import java.io.InputStream;

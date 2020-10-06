@@ -1,4 +1,4 @@
-package hideandseek;
+package hideandseek.util;
 
 public class CsvParsingException extends Exception {
 

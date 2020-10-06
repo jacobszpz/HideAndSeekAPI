@@ -1,4 +1,4 @@
-package hideandseek;
+package hideandseek.util;
 
 import java.io.StringReader;
 import java.util.ArrayList;

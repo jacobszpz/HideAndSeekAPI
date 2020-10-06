@@ -14,6 +14,10 @@ import hideandseek.objects.GameState;
 import hideandseek.objects.HSMap;
 import hideandseek.objects.Status;
 import hideandseek.objects.Ticket;
+import hideandseek.util.AIHttp;
+import hideandseek.util.CsvParsingException;
+import hideandseek.util.CsvUtil;
+import hideandseek.util.ParameterStringBuilder;
 
 public class HideAndSeek {
 	private static String apiURL = "http://challenge.uclan.ac.uk:8080/preston/";
@@ -26,6 +30,8 @@ public class HideAndSeek {
 	private static GameState gameState;
 	private static PositionInfo position;
 	private static boolean createdGame = false;
+	
+	public static boolean development = false;
 
 	public static List<HSMap> getMaps() {
 		return mapList;
@@ -217,8 +223,14 @@ public class HideAndSeek {
 
 			if (operationStatus == Status.OKAY) {
 				List<String> dataRow = csvTable.get(1);
-				position = new PositionInfo(dataRow.get(0), dataRow.get(1), dataRow.get(2), dataRow.get(3));
-
+				
+				if (dataRow.size() == 1) {
+					position = new PositionInfo(dataRow.get(0));
+				} else if (dataRow.size() == 4) {
+					position = new PositionInfo(dataRow.get(0), dataRow.get(1), dataRow.get(2), dataRow.get(3));
+				} else {
+					operationStatus = Status.CSV_ERROR;
+				}
 			}
 		} catch (CsvParsingException e) {
 			e.printStackTrace();
@@ -243,9 +255,17 @@ public class HideAndSeek {
 				StateOfGame stateOfGame = StateOfGame.fromString(dataRow.get(0));
 				
 				if (stateOfGame == StateOfGame.OPEN || stateOfGame == StateOfGame.OVER) {
-					gameState = new GameState(stateOfGame, "0", "");
+					gameState = new GameState(stateOfGame);
 				} else {
-					gameState = new GameState(dataRow.get(0), dataRow.get(1), dataRow.get(2));
+					if (dataRow.size() == 1) {
+						gameState = new GameState(dataRow.get(0), dataRow.get(1), dataRow.get(2));
+					} else if (dataRow.size() == 2) {
+						gameState = new GameState(dataRow.get(0), dataRow.get(1));
+					} else if (dataRow.size() == 3) {
+						gameState = new GameState(dataRow.get(0), dataRow.get(1), dataRow.get(2));
+					} else {
+						operationStatus = Status.CSV_ERROR;
+					}
 				}
 			}
 		} catch (CsvParsingException e) {
@@ -286,7 +306,10 @@ public class HideAndSeek {
 		String requestURL = apiURL + endpoint + urlParams;
 		HttpURLConnection apiConnection = AIHttp.makeDefaultConnection(requestURL);
 		String result = AIHttp.getResponseContent(apiConnection);
-		System.out.println(result);
+		
+		if (development) {
+			System.out.println(result);
+		}
 
 		try {
 			return CsvUtil.fromCsvTable(result);

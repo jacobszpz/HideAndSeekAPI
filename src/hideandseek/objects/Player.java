@@ -1,8 +1,8 @@
 package hideandseek.objects;
 
 public class Player {
-	public String colour;
-	public String name;
+	private String colour;
+	private String name;
 
 	public Player(String name, String colour) {
 		this.name = name;

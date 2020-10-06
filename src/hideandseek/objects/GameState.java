@@ -3,7 +3,7 @@ package hideandseek.objects;
 public class GameState {
 	private StateOfGame state;
 	private int round;
-	private String msg;
+	private String msg = "";
 	
 	public GameState(String state, String round, String msg) {
 		this.state = StateOfGame.fromString(state);
@@ -15,6 +15,15 @@ public class GameState {
 		this.state = state;
 		this.round = Integer.valueOf(round);
 		this.msg = msg;
+	}
+	
+	public GameState(String state, String msg) {
+		this.state = StateOfGame.fromString(state);
+		this.msg = msg;
+	}
+	
+	public GameState(StateOfGame state) {
+		this.state = state;
 	}
 
 	public StateOfGame getState() {

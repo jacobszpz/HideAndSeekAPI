@@ -13,6 +13,11 @@ public class PositionInfo {
 		this.red = Integer.valueOf(r);
 	}
 	
+	public PositionInfo(String location) {
+		this.location = location;
+	}
+	
+	
 	public String getLocation() {
 		return location;
 	}

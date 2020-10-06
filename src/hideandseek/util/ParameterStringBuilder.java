@@ -1,12 +1,12 @@
-package hideandseek;
+package hideandseek.util;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Map;
 
-public class ParameterStringBuilder {
+public final class ParameterStringBuilder {
     public static String getParamsString(Map<String, String> params) 
-      throws UnsupportedEncodingException{
+      throws UnsupportedEncodingException {
         StringBuilder result = new StringBuilder();
         result.append("?");
 
