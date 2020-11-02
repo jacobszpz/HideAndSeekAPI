@@ -1,7 +1,6 @@
 package hideandseek.tests;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
@@ -40,6 +39,12 @@ class StatusTest {
 		String success = "Operation successful";
 		Status.OKAY.setMsg(success);
 		assertEquals(success, Status.OKAY.getMsg());
-		assertNull(Status.ERROR.getMsg());
+		assertNotNull(Status.ERROR.getMsg());
+	}
+	
+	@Test
+	void nullMsgTest() {
+		assertNotNull(Status.IO_ERROR.getMsg());
+		
 	}
 }

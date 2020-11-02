@@ -22,6 +22,10 @@ public class GameState {
 		this.msg = msg;
 	}
 	
+	public GameState(String state) {
+		this.state = StateOfGame.fromString(state);
+	}
+
 	public GameState(StateOfGame state) {
 		this.state = state;
 	}

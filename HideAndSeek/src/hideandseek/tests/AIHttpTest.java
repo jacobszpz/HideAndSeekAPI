@@ -36,5 +36,7 @@ class AIHttpTest {
 		} catch (IOException e) {	
 			return;
 		}
+		
+		fail();
 	}
 }

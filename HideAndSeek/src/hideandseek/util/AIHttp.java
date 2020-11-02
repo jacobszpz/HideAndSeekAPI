@@ -25,7 +25,15 @@ public class AIHttp {
 		if (encoding == null) {
 			encoding = "UTF-8";
 		}
-		InputStreamReader reader = new InputStreamReader(getConnectionStream(connection), encoding);
+		
+		InputStreamReader reader;
+
+		try {
+			reader = new InputStreamReader(getConnectionStream(connection), encoding);
+		} catch (NullPointerException e) {
+			throw new IOException();
+		}
+
 		try {
 			int contentLength = connection.getContentLength();
 			StringBuilder sb = (contentLength != -1)

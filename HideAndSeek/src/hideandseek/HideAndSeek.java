@@ -12,6 +12,7 @@ import hideandseek.objects.PositionInfo;
 import hideandseek.objects.StateOfGame;
 import hideandseek.objects.GameState;
 import hideandseek.objects.HSMap;
+import hideandseek.objects.InGamePlayer;
 import hideandseek.objects.Status;
 import hideandseek.objects.Ticket;
 import hideandseek.util.AIHttp;
@@ -27,6 +28,8 @@ public class HideAndSeek {
 	private static final String teamName = "6B-StudioSix";
 	private static List<HSMap> mapList;
 	private static List<Player> playerList;
+	private static List<InGamePlayer> playerDetails;
+	private static List<Ticket> drXLog;
 	private static GameState gameState;
 	private static PositionInfo position;
 	private static boolean createdGame = false;
@@ -45,11 +48,27 @@ public class HideAndSeek {
 		return playerList;
 	}
 	
+	public static List<InGamePlayer> getPlayerDetails() {
+		return playerDetails;
+	}
+	
+	public static int getPlayerDetailsCount() {
+		return playerDetails.size();
+	}
+	
 	public static int getPlayerCount() {
 		return playerList.size();
 	}
 	
-	public static Status fetchMaps() throws IOException {
+	public static List<Ticket> getDrXLog(){
+		return drXLog;
+	}
+	
+	public static int getDrXLogCount() {
+		return drXLog.size();
+	}
+	
+	public static Status fetchMaps() {
 		Status operationStatus = Status.OKAY;
 		List<HSMap> tempList = new ArrayList<HSMap>();
 
@@ -70,12 +89,15 @@ public class HideAndSeek {
 		} catch (CsvParsingException e) {
 			e.printStackTrace();
 			operationStatus = Status.CSV_ERROR;
+		} catch (IOException e) {
+			e.printStackTrace();
+			operationStatus = Status.IO_ERROR;
 		}
 
 		return operationStatus;
 	}
 
-	public static Status createGame(String playerName, int mapIndex, int roundsIndex) throws IOException {
+	public static Status createGame(String playerName, int mapIndex, int roundsIndex) {
 		Status operationStatus = Status.OKAY;
 		HSMap selectedMap = mapList.get(mapIndex);
 		String rounds = selectedMap.getRounds().get(roundsIndex);
@@ -102,12 +124,15 @@ public class HideAndSeek {
 		} catch (CsvParsingException e) {
 			e.printStackTrace();
 			operationStatus = Status.CSV_ERROR;
+		} catch (IOException e) {
+			e.printStackTrace();
+			operationStatus = Status.IO_ERROR;
 		}
 
 		return operationStatus;
 	}
 
-	public static Status joinGame(String playerName, String gameID) throws IOException {
+	public static Status joinGame(String playerName, String gameID) {
 		Status operationStatus = Status.OKAY;
 
 		try {
@@ -130,12 +155,15 @@ public class HideAndSeek {
 		} catch (CsvParsingException e) {
 			e.printStackTrace();
 			operationStatus = Status.CSV_ERROR;
+		} catch (IOException e) {
+			e.printStackTrace();
+			operationStatus = Status.IO_ERROR;
 		}
 
 		return operationStatus;
 	}
 
-	public static Status fetchPlayers() throws IOException {
+	public static Status fetchPlayers() {
 		Status operationStatus = Status.OKAY;
 		List<Player> tempList = new ArrayList<Player>();
 
@@ -159,12 +187,15 @@ public class HideAndSeek {
 		} catch (CsvParsingException e) {
 			e.printStackTrace();
 			operationStatus = Status.CSV_ERROR;
+		} catch (IOException e) {
+			e.printStackTrace();
+			operationStatus = Status.IO_ERROR;
 		}
 
 		return operationStatus;
 	}
 
-	public static Status startGame() throws IOException {
+	public static Status startGame() {
 		Status operationStatus = Status.NOT_POSSIBLE;
 
 		if (createdGame) {
@@ -183,13 +214,16 @@ public class HideAndSeek {
 			} catch (CsvParsingException e) {
 				e.printStackTrace();
 				operationStatus = Status.CSV_ERROR;
+			} catch (IOException e) {
+				e.printStackTrace();
+				operationStatus = Status.IO_ERROR;
 			}
 		}
 
 		return operationStatus;
 	}
 
-	public static Status makeMove(int destination, Ticket ticket) throws IOException {
+	public static Status makeMove(int destination, Ticket ticket) {
 		Status operationStatus = Status.OKAY;
 
 		try {
@@ -206,12 +240,15 @@ public class HideAndSeek {
 		} catch (CsvParsingException e) {
 			e.printStackTrace();
 			operationStatus = Status.CSV_ERROR;
+		} catch (IOException e) {
+			e.printStackTrace();
+			operationStatus = Status.IO_ERROR;
 		}
 
 		return operationStatus;
 	}
 
-	public static Status fetchPosition() throws IOException {
+	public static Status fetchPosition() {
 		Status operationStatus = Status.OKAY;
 
 		try {
@@ -235,12 +272,15 @@ public class HideAndSeek {
 		} catch (CsvParsingException e) {
 			e.printStackTrace();
 			operationStatus = Status.CSV_ERROR;
+		} catch (IOException e) {
+			e.printStackTrace();
+			operationStatus = Status.IO_ERROR;
 		}
 
 		return operationStatus;
 	}
 
-	public static Status fetchGameState() throws IOException {
+	public static Status fetchGameState() {
 		Status operationStatus = Status.OKAY;
 
 		try {
@@ -258,7 +298,7 @@ public class HideAndSeek {
 					gameState = new GameState(stateOfGame);
 				} else {
 					if (dataRow.size() == 1) {
-						gameState = new GameState(dataRow.get(0), dataRow.get(1), dataRow.get(2));
+						gameState = new GameState(dataRow.get(0));
 					} else if (dataRow.size() == 2) {
 						gameState = new GameState(dataRow.get(0), dataRow.get(1));
 					} else if (dataRow.size() == 3) {
@@ -271,6 +311,77 @@ public class HideAndSeek {
 		} catch (CsvParsingException e) {
 			e.printStackTrace();
 			operationStatus = Status.CSV_ERROR;
+		} catch (IOException e) {
+			e.printStackTrace();
+			operationStatus = Status.IO_ERROR;
+		}
+
+		return operationStatus;
+	}
+	
+	public static Status fetchDrXLog() {
+		Status operationStatus = Status.OKAY;
+		List<Ticket> tempList = new ArrayList<Ticket>();
+
+		try {
+			Map<String, String> parameters = new HashMap<>();
+			parameters.put("gameID", getGameID());
+
+			List<List<String>> csvTable = makeAPIRequest("getDrXLog", parameters);
+			
+			List<String> statusRow = csvTable.get(0);
+			System.out.println(statusRow);
+			operationStatus = Status.fromString(statusRow.get(0));
+			operationStatus.setMsg(statusRow.get(1));
+
+			if (operationStatus == Status.OKAY) {
+				for (int i = 1; i < csvTable.size(); i++) {
+					tempList.add(Ticket.fromString(csvTable.get(i).get(0)));
+				}
+			}
+
+			drXLog = tempList;
+
+		} catch (CsvParsingException e) {
+			e.printStackTrace();
+			operationStatus = Status.CSV_ERROR;
+		} catch (IOException e) {
+			e.printStackTrace();
+			operationStatus = Status.IO_ERROR;
+		}
+
+		return operationStatus;
+	}
+	
+	public static Status fetchPlayerDetails() {
+		Status operationStatus = Status.OKAY;
+		List<InGamePlayer> tempList = new ArrayList<InGamePlayer>();
+
+		try {
+			Map<String, String> parameters = new HashMap<>();
+			parameters.put("gameID", getGameID());
+
+			List<List<String>> csvTable = makeAPIRequest("getPlayerDetails", parameters);
+			
+			List<String> statusRow = csvTable.get(0);
+			operationStatus = Status.fromString(statusRow.get(0));
+			operationStatus.setMsg(statusRow.get(1));
+
+			if (operationStatus == Status.OKAY) {
+				for (int i = 1; i < csvTable.size(); i++) {
+					List<String> row = csvTable.get(i);
+					tempList.add(new InGamePlayer(row.get(0), row.get(1), row.get(2), row.get(3), row.get(4), row.get(5)));
+				}
+			}
+
+			playerDetails = tempList;
+
+		} catch (CsvParsingException e) {
+			e.printStackTrace();
+			operationStatus = Status.CSV_ERROR;
+		} catch (IOException e) {
+			e.printStackTrace();
+			operationStatus = Status.IO_ERROR;
 		}
 
 		return operationStatus;
